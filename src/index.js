@@ -144,7 +144,7 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
 }
 
 function responseUnauthorized(url) {
-  const headers = new(Headers);
+  const headers = new (Headers);
   if (MODE == "debug") {
     headers.set(
       "Www-Authenticate",
