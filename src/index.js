@@ -83,7 +83,7 @@ async function handleRequest(request) {
       console.log("resp.status !== 401", resp.status, newUrl.toString());
       return resp;
     }
-    const authenticateStr = resp.headers.get("WWW-Authenticate");
+    const authenticateStr = resp.headers.get("Www-Authenticate");
     if (authenticateStr === null) {
       console.log("authenticateStr === null", resp.status);
       return resp;
