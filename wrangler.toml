@@ -7,7 +7,7 @@ port = 8787
 local_protocol = "http"
 
 [env.vars]
-CUSTOM_DOMAIN = "e-whisper.com"
+CUSTOM_DOMAIN = "bestwebsites.info"
 
 [env.dev.vars]
 MODE = "debug"
