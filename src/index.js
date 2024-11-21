@@ -88,6 +88,7 @@ async function handleRequest(request) {
       return resp;
     }
     const wwwAuthenticate = parseAuthenticate(authenticateStr);
+    console.log("wwwAuthenticate", wwwAuthenticate);
     let scope = url.searchParams.get("scope");
     // autocomplete repo part into scope for DockerHub library images
     // Example: repository:busybox:pull => repository:library/busybox:pull
@@ -108,6 +109,7 @@ async function handleRequest(request) {
       pathParts.splice(2, 0, "library");
       const redirectUrl = new URL(url);
       redirectUrl.pathname = pathParts.join("/");
+      console.log("Redirecting to", redirectUrl.toString());
       return Response.redirect(redirectUrl, 301);
     }
   }
