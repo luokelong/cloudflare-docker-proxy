@@ -80,6 +80,7 @@ async function handleRequest(request) {
       redirect: "follow",
     });
     if (resp.status !== 401) {
+      console.log("resp.status !== 401", resp.status, newUrl.toString());
       return resp;
     }
     const authenticateStr = resp.headers.get("WWW-Authenticate");
