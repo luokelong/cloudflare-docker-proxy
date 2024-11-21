@@ -33,12 +33,6 @@ function routeByHosts(host) {
 async function handleRequest(request) {
   const url = new URL(request.url);
   const upstream = routeByHosts(url.hostname);
-
-  console.log("CUSTOM_DOMAIN:", CUSTOM_DOMAIN);
-  console.log("Request Host:", url.hostname);
-  console.log("Request URL:", url.toString());
-  console.log("Upstream:", upstream);
-
   if (upstream === "") {
     return new Response(
       JSON.stringify({
@@ -49,29 +43,22 @@ async function handleRequest(request) {
       }
     );
   }
-  console.log("NOT 404");
   const isDockerHub = upstream == dockerHub;
   const authorization = request.headers.get("Authorization");
-  console.log("Authorization:", authorization);
   if (url.pathname == "/v2/") {
     const newUrl = new URL(upstream + "/v2/");
     const headers = new Headers();
     if (authorization) {
       headers.set("Authorization", authorization);
     }
-    console.log("Checking if need to authenticate", newUrl.toString());
     // check if need to authenticate
     const resp = await fetch(newUrl.toString(), {
       method: "GET",
       headers: headers,
       redirect: "follow",
     });
-
     if (resp.status === 401) {
       return responseUnauthorized(url);
-    }
-    if(resp.status === 404) {
-      console.log("404_1");
     }
     return resp;
   }
@@ -83,16 +70,13 @@ async function handleRequest(request) {
       redirect: "follow",
     });
     if (resp.status !== 401) {
-      console.log("resp.status !== 401", resp.status, newUrl.toString());
       return resp;
     }
     const authenticateStr = resp.headers.get("Www-Authenticate");
     if (authenticateStr === null) {
-      console.log("authenticateStr === null", resp.status);
       return resp;
     }
     const wwwAuthenticate = parseAuthenticate(authenticateStr);
-    console.log("wwwAuthenticate", wwwAuthenticate);
     let scope = url.searchParams.get("scope");
     // autocomplete repo part into scope for DockerHub library images
     // Example: repository:busybox:pull => repository:library/busybox:pull
@@ -113,7 +97,6 @@ async function handleRequest(request) {
       pathParts.splice(2, 0, "library");
       const redirectUrl = new URL(url);
       redirectUrl.pathname = pathParts.join("/");
-      console.log("Redirecting to", redirectUrl.toString());
       return Response.redirect(redirectUrl, 301);
     }
   }
@@ -147,7 +130,6 @@ function parseAuthenticate(authenticateStr) {
 
 async function fetchToken(wwwAuthenticate, scope, authorization) {
   const url = new URL(wwwAuthenticate.realm);
-  console.log("fetchToken", url.toString());
   if (wwwAuthenticate.service.length) {
     url.searchParams.set("service", wwwAuthenticate.service);
   }
@@ -166,12 +148,12 @@ function responseUnauthorized(url) {
   if (MODE == "debug") {
     headers.set(
       "Www-Authenticate",
-      `Bearer realm="http://${url.host}/v2/auth",service="registry.docker.io"`
+      `Bearer realm="http://${url.host}/v2/auth",service="cloudflare-docker-proxy"`
     );
   } else {
     headers.set(
       "Www-Authenticate",
-      `Bearer realm="https://${url.hostname}/v2/auth",service="registry.docker.io"`
+      `Bearer realm="https://${url.hostname}/v2/auth",service="cloudflare-docker-proxy"`
     );
   }
   return new Response(JSON.stringify({ message: "UNAUTHORIZED" }), {
