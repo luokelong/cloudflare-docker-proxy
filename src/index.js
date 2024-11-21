@@ -33,6 +33,12 @@ function routeByHosts(host) {
 async function handleRequest(request) {
   const url = new URL(request.url);
   const upstream = routeByHosts(url.hostname);
+
+  console.log("CUSTOM_DOMAIN:", CUSTOM_DOMAIN);
+  console.log("Request Host:", url.hostname);
+  console.log("Request URL:", url.toString());
+  console.log("Upstream:", upstream);
+
   if (upstream === "") {
     return new Response(
       JSON.stringify({
