@@ -158,11 +158,7 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
   if (authorization) {
     headers.set("Authorization", authorization);
   }
-  const res= await fetch(url, { method: "GET", headers: headers });
-  if(res.status === 404) {
-    console.log("404_2");
-  }
-  return res;
+  return await fetch(url, { method: "GET", headers: headers });
 }
 
 function responseUnauthorized(url) {
@@ -170,12 +166,12 @@ function responseUnauthorized(url) {
   if (MODE == "debug") {
     headers.set(
       "Www-Authenticate",
-      `Bearer realm="http://${url.host}/v2/auth",service="cloudflare-docker-proxy"`
+      `Bearer realm="http://${url.host}/v2/auth",service="registry.docker.io"`
     );
   } else {
     headers.set(
       "Www-Authenticate",
-      `Bearer realm="https://${url.hostname}/v2/auth",service="cloudflare-docker-proxy"`
+      `Bearer realm="https://${url.hostname}/v2/auth",service="registry.docker.io"`
     );
   }
   return new Response(JSON.stringify({ message: "UNAUTHORIZED" }), {
