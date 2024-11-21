@@ -84,6 +84,7 @@ async function handleRequest(request) {
     }
     const authenticateStr = resp.headers.get("WWW-Authenticate");
     if (authenticateStr === null) {
+      console.log("authenticateStr === null", resp.status);
       return resp;
     }
     const wwwAuthenticate = parseAuthenticate(authenticateStr);
