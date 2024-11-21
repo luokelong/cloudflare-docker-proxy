@@ -67,6 +67,9 @@ async function handleRequest(request) {
     if (resp.status === 401) {
       return responseUnauthorized(url);
     }
+    if(resp.status === 404) {
+      console.log("404_1");
+    }
     return resp;
   }
   // get token
@@ -147,7 +150,11 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
   if (authorization) {
     headers.set("Authorization", authorization);
   }
-  return await fetch(url, { method: "GET", headers: headers });
+  const res= await fetch(url, { method: "GET", headers: headers });
+  if(res.status === 404) {
+    console.log("404_2");
+  }
+  return res;
 }
 
 function responseUnauthorized(url) {
