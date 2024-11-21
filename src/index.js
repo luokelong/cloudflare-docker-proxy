@@ -52,18 +52,21 @@ async function handleRequest(request) {
   console.log("NOT 404");
   const isDockerHub = upstream == dockerHub;
   const authorization = request.headers.get("Authorization");
+  console.log("Authorization:", authorization);
   if (url.pathname == "/v2/") {
     const newUrl = new URL(upstream + "/v2/");
     const headers = new Headers();
     if (authorization) {
       headers.set("Authorization", authorization);
     }
+    console.log("Checking if need to authenticate", newUrl.toString());
     // check if need to authenticate
     const resp = await fetch(newUrl.toString(), {
       method: "GET",
       headers: headers,
       redirect: "follow",
     });
+
     if (resp.status === 401) {
       return responseUnauthorized(url);
     }
@@ -144,6 +147,7 @@ function parseAuthenticate(authenticateStr) {
 
 async function fetchToken(wwwAuthenticate, scope, authorization) {
   const url = new URL(wwwAuthenticate.realm);
+  console.log("fetchToken", url.toString());
   if (wwwAuthenticate.service.length) {
     url.searchParams.set("service", wwwAuthenticate.service);
   }
